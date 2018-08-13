@@ -1022,8 +1022,8 @@
           }
         ],
         "contractDependencies": [
-          9,
           36,
+          9,
           56,
           185
         ],
@@ -1668,8 +1668,8 @@
           }
         ],
         "contractDependencies": [
-          9,
           36,
+          9,
           56,
           185
         ],
@@ -1699,5 +1699,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-08-10T22:02:28.461Z"
+  "updatedAt": "2018-08-13T13:04:43.704Z"
 }
