@@ -1,46 +1,42 @@
 pragma solidity ^0.4.23;
 
-import "./Ownable.sol";
+import "./CreateCryptonumbers.sol";
 import "./SafeMath.sol";
+import "./ERC721.sol";
 
-contract Cryptonumbers is Ownable {
+contract Cryptonumbers is ERC721, CreateCryptonumbers {
 
   using SafeMath for uint256;
 
-  event NewNumber(uint numberId, string name, uint hashNumber);
+  mapping (uint => address) Approvals;
 
-  uint hashDigits = 16;
-  uint hashModulus = 10 ** hashDigits;
-
-  struct Number {
-    string name;
-    uint hashNumber;
+  function balanceOf(address _owner) public view returns (uint256 _balance) {
+    return ownerNumberCount[_owner];
   }
 
-  Number[] public numbers;
-
-  mapping (uint => address) public numberToOwner;
-  mapping (address => uint) ownerNumberCount;
-
-  function _createNumber(string _name, uint _hashNumber) internal {
-    uint id = numbers.push(Number(_name, _hashNumber)) - 1;
-    numberToOwner[id] = msg.sender;
-    ownerNumberCount[msg.sender] = ownerNumberCount[msg.sender].add(1);
-    emit NewNumber(id, _name, _hashNumber);
+  function ownerOf(uint256 _tokenId) public view returns (address _owner) {
+    return numberToOwner[_tokenId];
   }
 
-  function _generateRandomhashNumber(string _str) private view returns (uint) {
-    uint rand = uint(keccak256(abi.encodePacked(_str)));
-    return rand % hashModulus;
+  function _transfer(address _from, address _to, uint256 _tokenId) private {
+    ownerNumberCount[_to] = ownerNumberCount[_to].add(1);
+    ownerNumberCount[msg.sender] = ownerNumberCount[msg.sender].sub(1);
+    numberToOwner[_tokenId] = _to;
+    emit Transfer(_from, _to, _tokenId);
   }
 
-  function createRandomNumber(string _name) public {
-    require(ownerNumberCount[msg.sender] == 0);
-    uint randhash = _generateRandomhashNumber(_name);
-    randhash = randhash - randhash % 100;
-    _createNumber(_name, randhash);
+  function transfer(address _to, uint256 _tokenId) public onlyOwnerOf(_tokenId) {
+    _transfer(msg.sender, _to, _tokenId);
   }
 
+  function approve(address _to, uint256 _tokenId) public onlyOwnerOf(_tokenId) {
+    Approvals[_tokenId] = _to;
+    emit Approval(msg.sender, _to, _tokenId);
+  }
+
+  function takeOwnership(uint256 _tokenId) public {
+    require(Approvals[_tokenId] == msg.sender);
+    address owner = ownerOf(_tokenId);
+    _transfer(owner, msg.sender, _tokenId);
+  }
 }
-
-
