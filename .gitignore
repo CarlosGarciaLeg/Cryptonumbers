@@ -3,6 +3,7 @@ myproject
 
 /node_modules
 /.idea
+/cache
 *.tsbuildinfo
 
 .DS_Store

@@ -1,4 +1,3 @@
-/* hardhat.config.js */
 require("@nomiclabs/hardhat-waffle")
 const fs = require('fs')
 const privateKey = fs.readFileSync(".secret").toString().trim() || "01234567890123456789"
